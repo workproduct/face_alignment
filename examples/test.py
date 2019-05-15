@@ -4,6 +4,7 @@ from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
 from skimage import io
 import numpy
+import re
 
 
 # Run the 3D face alignment on a test image, without CUDA.
@@ -12,7 +13,15 @@ fa = face_alignment.FaceAlignment(face_alignment.LandmarksType._3D, device='cuda
 
 input = io.imread('../test/assets/yates.jpg')
 preds = fa.get_landmarks(input)[-1]
-print(preds)
+#print(preds)
+clean = re.sub("(\ \[\ )", "", str(preds))
+clean = re.sub("(\[\[\ )", "", clean)
+clean = re.sub("(\]|]])", "", clean)
+clean = re.sub("(\ \ )", ",", clean)
+clean = re.sub("(\ \-)", ",-", clean)
+print(clean)
+f = open("test_coord.txt", "a")
+f.write(clean)
 #TODO: Make this nice
 fig = plt.figure(frameon=False)
 w=30
@@ -35,6 +44,6 @@ ax.plot(preds[36:42,0],preds[36:42,1],marker='o',markersize=6,linestyle='-',colo
 ax.plot(preds[42:48,0],preds[42:48,1],marker='o',markersize=6,linestyle='-',color='black',lw=2)
 ax.plot(preds[48:60,0],preds[48:60,1],marker='o',markersize=6,linestyle='-',color='black',lw=2)
 ax.plot(preds[60:68,0],preds[60:68,1],marker='o',markersize=6,linestyle='-',color='black',lw=2)
-#plt.show()
+plt.show()
 
-plt.savefig('test.svg', bbox_inches='tight')
+#plt.savefig('test.svg', bbox_inches='tight')
